@@ -1,0 +1,9 @@
+<?php 
+class rs_index_index extends antc
+{
+    function exec(antr $r)
+	{
+		echo "Hello World";
+		$this->noView();//删除将会因为没有模板而报错
+	}
+}
