@@ -8,6 +8,10 @@
 class antc
 {
     /**
+     * 自执行返回值
+     */
+    public $selfExecuteResult = false;
+    /**
      * 是否拥有视图，一些AJAX请求或者接口，往往没有视图
      * @var bool
      */
@@ -57,12 +61,39 @@ class antc
      */
     public $writeAble = true;
 
-    function __construct($rs, $act)
+    public $rs;
+    public $act;
+
+    /**
+     * 由于静态函数run的实现过于复杂，对现有代码改动很大，所以最终采用冗余生成对象的方式来实现这个功能
+     * 通过:
+     * new rs_index_help(true);来自执行rs=index&act=help这个控制器对象
+     * @param bool $selfExecute
+     * @param array $displayParam
+     */
+    function __construct($selfExecute = false,$displayParam = array())
+    {
+        if($selfExecute) {
+            $name = get_class($this);
+            $namePieces = explode('_',$name);
+            $this->init(strtolower($namePieces[1]),strtolower($namePieces[2]));
+
+            $r = ant::getRequest($this);
+            $this->displayParam = $displayParam;
+            $type = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
+            if($type == 'GET')
+                $this->selfExecuteResult = $this->exec($r);
+            else
+                $this->selfExecuteResult = $this->post($r);
+        }
+    }
+
+    function init($rs,$act)
     {
         $this->rs = $rs;
         $this->act = $act;
         if ($this->requestAct === null)
-            $this->requestAct = array($rs, $act);
+            $this->requestAct = array($this->rs, $this->act);
     }
 
     function noView()
@@ -275,7 +306,8 @@ class antc
      * 这里提供一种更加容易阅读的代码书写方式
      * rs_index_help::run();//代码在rs/index/help.php
      * 两种方法各有好处，但是在控制器命名不会改变的情况下，第二种将更加友好
-     * 
+     * 但是你必须复制这个代码到每个控制器中，否则__CLASS__无法正常使用，希望之后PHP能够提供更好的支持
+     *
      * @static
      * @param array $displayParam
      * @param string $type

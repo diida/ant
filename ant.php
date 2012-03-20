@@ -107,7 +107,8 @@ class ant
                     /**
                      * @var antc $c
                      */
-                    $c = new $c($rs, $act);
+                    $c = new $c(false);
+                    $c->init($rs,$act);
                     $c->displayParam = $displayParam;
 
                     $r = self::getRequest($c);
