@@ -85,6 +85,7 @@ class antc
                 $this->selfExecuteResult = $this->exec($r);
             else
                 $this->selfExecuteResult = $this->post($r);
+            $this->display();
         }
     }
 
