@@ -58,12 +58,19 @@ class entry
 
         $path = $_GET['path'];
         $paths = explode('/', $path);
-        $paths = array_filter($paths);
+        $paths = array_filter($paths, function ($v) {
+            return preg_match('/\w+/', $v);
+        });
         $c = APP_NAMESPACE_ROOT . '\\rs\\' . implode('\\', $paths);
 
         try {
+            request::getInstance();
+            /**
+             * @var $act \ant\action
+             */
             $act = new $c;
-            $act->exec();
+            $act->exec(implode('/', $paths));
+            $act->display();
         } catch (error $e) {
             $e->output();
         }

@@ -21,10 +21,6 @@ class request
     private $val = null;
     private $type = null;
 
-    const TYPE_INT = 1;
-    const TYPE_STRING = 2;
-    const TYPE_ENUM = 3;
-
     static function rawData($key)
     {
         return self::$instance->$key;
@@ -73,9 +69,14 @@ class request
         }
     }
 
-    static function get($key, $type)
+    static function get($key)
     {
-        return self::$instance->request('get', $key, $type);
+        return self::$instance->request('get', $key);
+    }
+
+    static function getInt($key)
+    {
+        return self::get($key)->int()->val();
     }
 
     static function post($key)
@@ -93,7 +94,7 @@ class request
         return self::$instance->request('server', $key);
     }
 
-    private function request($type, $key, $type)
+    private function request($type, $key)
     {
         if (in_array($type, array('post', 'get', 'server', 'cookie', 'put'))) {
             self::$instance->type = $type;
@@ -186,69 +187,5 @@ class request
     static function put()
     {
         return self::$instance->request('put', 'put');
-    }
-
-    static public function getIp($number = 0)
-    {
-        static $ip = NULL;
-
-        $me = self::getInstance();
-        $server = $me->server;
-
-        if (empty($ip)) {
-            $keys = array('HTTP_X_REAL_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_REMOTE_HOST', 'HTTP_CLIENT_IP', 'REMOTE_ADDR');
-            $found = FALSE;
-            foreach ($keys as $key) {
-                if (!isset($server[$key])) continue;
-                $theIp = trim($server[$key]);
-                $ips = array();
-                if (preg_match_all('/(\d{1,3}(?:\.\d{1,3}){3})/is', $theIp, $ips)) {
-                    foreach ($ips[1] as $ip) {
-                        if (!self::isPersist($ip)) {
-                            $found = TRUE;
-                            break;
-                        }
-                    }
-                }
-                if ($found) {
-                    break;
-                }
-            }
-        }
-        if ($number) {
-            return self::ip2long($ip);
-        }
-        return $ip;
-    }
-
-    /**
-     * 判断是否是无效地址，广播地址
-     * @param string $ip
-     * @return boolean
-     */
-    static public function isPersist($ip)
-    {
-        $ip = self::ip2long($ip);
-        $persist = explode(",", "167772160,184549375,2130706433,2130706433,2886729728,2887778303,3232235520,3232301055");
-        $len = count($persist);
-        for ($i = 0; $i < $len; $i += 2) {
-            if ($ip >= $persist[$i] && $ip <= $persist[$i + 1]) {
-                return TRUE;
-            }
-        }
-        return FALSE;
-    }
-
-    /**
-     * 将IP转换成整型字符串
-     * @param string $ip
-     * @return int
-     */
-    static public function ip2long($ip)
-    {
-        if ($ip && !is_int($ip)) {
-            $ip = sprintf("%u", ip2long($ip));
-        }
-        return intval($ip);
     }
 }

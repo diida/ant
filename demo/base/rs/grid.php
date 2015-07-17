@@ -8,8 +8,12 @@
  */
 
 namespace base\rs;
+use \ant\action;
 
-class grid extends \ant\action
+class grid extends action
 {
+    function get()
+    {
 
+    }
 }

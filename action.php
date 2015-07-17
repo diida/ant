@@ -12,22 +12,83 @@ namespace ant;
 class action
 {
 
-    public function exec()
+    public $path;
+
+    public function init($path)
     {
-        switch ($_SERVER['REQUEST_METHOD']) {
+        $this->path = $path;
+    }
+
+    public function exec($path)
+    {
+        $this->init($path);
+        $ajax = request::isAjax();
+        switch (request::server('REQUEST_METHOD')->val()) {
             case 'GET':
-                return $this->get();
+                return $ajax ? $this->ajaxGet() : $this->get();
             case 'POST':
-                return $this->post();
+                return $ajax ? $this->ajaxPost() : $this->post();
             case 'PUT':
-                return $this->put();
+                return $ajax ? $this->ajaxPut() : $this->put();
             case 'DELETE':
-                return $this->delete();
+                return $ajax ? $this->ajaxDelete() : $this->delete();
         }
+        return false;
     }
 
     public function get()
     {
         return true;
+    }
+
+    public function delete()
+    {
+        return true;
+    }
+
+    public function ajaxDelete()
+    {
+        return true;
+    }
+
+    public function put()
+    {
+        return true;
+    }
+
+    public function ajaxPut()
+    {
+        return true;
+    }
+
+    public function post()
+    {
+        return true;
+    }
+
+    public function ajaxPost()
+    {
+        return true;
+    }
+
+    public function ajaxGet()
+    {
+        return true;
+    }
+
+    public $tplData = [];
+
+    public function assign($key, $val)
+    {
+        $this->tplData[$key] = $val;
+    }
+
+    public function display()
+    {
+        extract($this->tplData);
+        $file = AUTOLOAD_ROOT . APP_NAMESPACE_ROOT . '/html/' . $this->path . '.php';
+        if (file_exists($file)) {
+            include($file);
+        }
     }
 }
