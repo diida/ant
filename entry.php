@@ -26,7 +26,7 @@ class entry
         @ini_set('magic_quotes_gpc', 'Off');
         !defined('DS') && define('DS', "/");
 
-        define('PATH_ANT', __DIR__ . DS);
+        !defined('PATH_ANT') && define('PATH_ANT', __DIR__ . DS);
 
         /**
          * 自动加载类需要
@@ -47,7 +47,7 @@ class entry
     /**
      * 框架入口
      */
-    public static function run()
+    public static function run($paths = [])
     {
         if (!self::init()) {
             return false;
@@ -56,11 +56,14 @@ class entry
         //默认自动加载
         spl_autoload_register(['\\ant\\entry', 'autoLoad']);
 
-        $path = $_GET['path'];
-        $paths = explode('/', $path);
-        $paths = array_filter($paths, function ($v) {
-            return preg_match('/\w+/', $v);
-        });
+        if (empty($paths)) {
+            $path = $_GET['path'];
+            $paths = explode('/', $path);
+            $paths = array_filter($paths, function ($v) {
+                return preg_match('/\w+/', $v);
+            });
+        }
+
         $c = APP_NAMESPACE_ROOT . '\\rs\\' . implode('\\', $paths);
 
         try {
@@ -72,7 +75,12 @@ class entry
             $act->exec(implode('/', $paths));
             $act->display();
         } catch (error $e) {
-            $e->output();
+            if ($e->getCode() <= error::CLASS_FILE_NO_EXISTS + error::$baseCode) {
+                $file = AUTOLOAD_ROOT . APP_NAMESPACE_ROOT . '/html/' . implode('\\', $paths) . '.php';
+                include($file);
+            } else {
+                $e->output();
+            }
         }
         return false;
     }
@@ -92,10 +100,10 @@ class entry
         if (file_exists($file)) {
             require_once($file);
             if (!class_exists($c)) {
-                error::setError('类：' . $c . '找不到');
+                error::throwError(error::CLASS_NO_EXISTS, $c);
             }
         } else {
-            error::setError('类文件：' . $c . '找不到');
+            error::throwError(error::CLASS_FILE_NO_EXISTS, $file . ':' . $c);
         }
     }
 }
