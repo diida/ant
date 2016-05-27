@@ -5,7 +5,7 @@
 弱耦合是这个框架的核心设计原则，除了entry，其他部分都尽量减少依赖关系。虽然我们也不可能单独使用某个文件，但是耦合越低，错误就越容易解决。
 
 ## restful
-ant框架基于restful架构，使用GET POST PUT DELETE 实现 查、增、改、删
+Ant框架基于restful架构，使用GET POST PUT DELETE 实现 查、增、改、删
 
 ## 入口
 接受2种url参数来访问固定的地址，其中带有下划线的链接，控制器和父级共享，这提供一种良好的封装逻辑结构的方法
@@ -26,8 +26,11 @@ ant框架基于restful架构，使用GET POST PUT DELETE 实现 查、增、改�
 2. GET /game/user/friend?x=1 => /index.php?path=game/user/friend&x=1
 
 ## url参数规范
-ant框架不提倡自定义参数格式。例如index.php?a=1&b=2，通过自定义为index-a-1-b-2。当需要一个短的、体验良好的url格式时
-请在代码或者nginx或者apache中设置
+Ant框架不提倡自定义参数格式。例如index.php?a=1&b=2，通过自定义为index-a-1-b-2。尽量使用正常的url参数书写方式。
+
+当需要一个短的、体验良好的url格式时，一般需要在代码或者nginx或者apache中设置。
+
+但是很多时候开发人员还是希望有这个功能，下面就介绍一些方案。
 
 ### 数字ID
 但是为了方便起见，比如下面这个
