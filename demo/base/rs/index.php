@@ -16,7 +16,9 @@ class index extends action
 {
     function get()
     {
-
+        echo '<pre>';
+        print_r(request::get('*'));
+        echo 'index';
     }
 
     function getColumn()

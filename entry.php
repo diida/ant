@@ -116,11 +116,6 @@ class entry
             $paths = explode('/', $path);
             $paths = array_filter($paths);
         }
-        $len = count($paths);
-        if ($len == 0) {
-            $paths[] = 'index';
-            $len = 1;
-        }
 
         $tmp = [];
         $params = false;
@@ -149,6 +144,10 @@ class entry
         $tmp = array_filter($tmp, function ($v) {
             return preg_match('/^[\w]+$/', $v) && !empty($v);
         });
+
+        if (empty($tmp)) {
+            $tmp[] = 'index';
+        }
 
         return [$tmp, $last];
     }
