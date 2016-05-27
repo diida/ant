@@ -8,12 +8,14 @@
 Ant框架基于restful架构，使用GET POST PUT DELETE 实现 查、增、改、删
 
 ## 入口
-接受2种url参数来访问固定的地址，其中带有下划线的链接，控制器和父级共享，这提供一种良好的封装逻辑结构的方法
+接受2种url参数来访问固定的地址，其中带有下划线的链接，控制器和父级共享，这提供一种良好的封装逻辑结构的方法。第五个是一种无需path参数的方案，
+一般需要服务器配置来配合使用。
 
 1. GET index.php?path=game/user
 2. GET index.php?path=game/user/_password
 3. GET index.php?path=game/user/friend
 4. GET index.php?path=game/user/friend/_group&group_id=1
+5. GET index.php?game/user/friend/_group&group_id=1
 
 ### 第四个链接会让人觉得有点不爽，在正式环境重写后，应该是这样
 1. GET /game/user/friend/_group?group_id=1
