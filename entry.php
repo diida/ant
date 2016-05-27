@@ -71,14 +71,7 @@ class entry
             $act->exec(implode('/', $paths), $last, $extra);
             $act->display();
         } catch (error $e) {
-            if ($e->getCode() <= error::CLASS_FILE_NO_EXISTS + error::$baseCode) {
-                $file = AUTOLOAD_ROOT . APP_NAMESPACE_ROOT . '/html/' . implode('\\', $paths) . '.php';
-                if (is_file($file)) {
-                    include($file);
-                }
-            } else {
-                $e->output();
-            }
+            $e->output();
         }
         return false;
     }

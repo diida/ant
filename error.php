@@ -15,10 +15,12 @@ class error extends \Exception
 
     const CLASS_NO_EXISTS = 2;
     const CLASS_FILE_NO_EXISTS = 3;
+    const TEMPLATE_NO_EXISTS = 4;
 
     static $error = [
         self::CLASS_FILE_NO_EXISTS => '类文件 %s 不存在',
         self::CLASS_NO_EXISTS => '类 %s 不存在',
+        self::TEMPLATE_NO_EXISTS => '模板不存在',
     ];
 
     public static function throwError($errno)
@@ -29,7 +31,9 @@ class error extends \Exception
 
         array_shift($args);
         array_unshift($args, $error);
-        $error = call_user_func_array('sprintf', $args);
+        if (count($args) > 1) {
+            $error = call_user_func_array('sprintf', $args);
+        }
 
         $errno += self::$baseCode;
         throw new error($error, $errno);

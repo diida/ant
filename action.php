@@ -95,9 +95,19 @@ class action
 
     public function display()
     {
-        extract($this->tplData);
-        $file = AUTOLOAD_ROOT . APP_NAMESPACE_ROOT . '/html/' . $this->path . '.php';
-        if (file_exists($file)) {
+        self::loadTpl($this->tplData, $this->path);
+    }
+
+    public static function loadTpl(&$data, $path)
+    {
+        extract($data);
+        $appNameSpace = str_replace('\\', '/', APP_NAMESPACE_ROOT);
+        $file = AUTOLOAD_ROOT . $appNameSpace . '/html/' . $path . '.php';
+        if (strpos($file, '..') !== false) {
+            error::throwError(error::TEMPLATE_NO_EXISTS);
+        }
+
+        if (is_file($file)) {
             include($file);
         }
     }

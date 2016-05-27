@@ -21,11 +21,14 @@ Ant框架基于restful架构，使用GET POST PUT DELETE 实现 查、增、改�
 1. GET /game/user/friend/_group?group_id=1
 
 ### 重写的原理
-如果你的默认入口设置了index.php，基于下面原理1，你可以不做任何重写设置
+如果你的默认入口设置了index.php，基于下面原理1，你可以不做任何重写设置，但是如果有参数就一定要用了，所以第3种重写方案应该是普遍的。
 
 1. GET /game/user/friend => /index.php?game/user/friend
 2. GET /game/user/friend => /index.php?path=game/user/friend
-2. GET /game/user/friend?x=1 => /index.php?path=game/user/friend&x=1
+3. GET /game/user/friend?x=1 => /index.php?path=game/user/friend&x=1
+
+rewrite ^/(.*?)?(.*)$ /index.php?path=$1&$2
+rewrite ^/(.*?)$ /index.php?path=$1
 
 ## url参数规范
 Ant框架不提倡自定义参数格式。例如index.php?a=1&b=2，通过自定义为index-a-1-b-2。尽量使用正常的url参数书写方式。
