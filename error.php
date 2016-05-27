@@ -11,9 +11,28 @@ namespace ant;
 
 class error extends \Exception
 {
-    public static function setError($err)
+    public static $baseCode = 1000;
+
+    const CLASS_NO_EXISTS = 2;
+    const CLASS_FILE_NO_EXISTS = 3;
+
+    static $error = [
+        self::CLASS_FILE_NO_EXISTS => '类文件 %s 不存在',
+        self::CLASS_NO_EXISTS => '类 %s 不存在',
+    ];
+
+    public static function throwError($errno)
     {
-        throw new error($err);
+
+        $error = self::$error[$errno];
+        $args = func_get_args();
+
+        array_shift($args);
+        array_unshift($args, $error);
+        $error = call_user_func_array('sprintf', $args);
+
+        $errno += self::$baseCode;
+        throw new error($error, $errno);
     }
 
     public function output()

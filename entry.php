@@ -26,7 +26,7 @@ class entry
         @ini_set('magic_quotes_gpc', 'Off');
         !defined('DS') && define('DS', "/");
 
-        define('PATH_ANT', __DIR__ . DS);
+        !defined('PATH_ANT') && define('PATH_ANT', __DIR__ . DS);
 
         /**
          * 自动加载类需要
@@ -47,7 +47,7 @@ class entry
     /**
      * 框架入口
      */
-    public static function run()
+    public static function run($paths = [])
     {
         if (!self::init()) {
             return false;
@@ -57,17 +57,17 @@ class entry
         spl_autoload_register(['\\ant\\entry', 'autoLoad']);
         //初始化request
         request::getInstance();
+        if (empty($paths)) {
+            $path = request::get('path')->trim()->val();
+            if (empty($path)) {
+                $path = request::server('QUERY_STRING')->val();
+            }
 
-        $path = request::get('path')->trim()->val();
-        if (empty($path)) {
-            $path = request::server('QUERY_STRING')->val();
+            $paths = explode('/', $path);
+            $paths = array_filter($paths, function ($v) {
+                return preg_match('/^\w+$/', $v) && !empty($v);
+            });
         }
-
-        $paths = explode('/', $path);
-        $paths = array_filter($paths, function ($v) {
-            return preg_match('/^\w+$/', $v) && !empty($v);
-        });
-
         $len = count($paths);
         if ($len == 0) {
             $paths[] = 'index';
@@ -93,7 +93,12 @@ class entry
             $act->exec(implode('/', $paths), $last);
             $act->display();
         } catch (error $e) {
-            $e->output();
+            if ($e->getCode() <= error::CLASS_FILE_NO_EXISTS + error::$baseCode) {
+                $file = AUTOLOAD_ROOT . APP_NAMESPACE_ROOT . '/html/' . implode('\\', $paths) . '.php';
+                include($file);
+            } else {
+                $e->output();
+            }
         }
         return false;
     }
@@ -113,10 +118,10 @@ class entry
         if (is_file($file)) {
             require_once($file);
             if (!class_exists($c)) {
-                error::setError('类：' . $c . '找不到');
+                error::throwError(error::CLASS_NO_EXISTS, $c);
             }
         } else {
-            error::setError('类文件：' . $file . '找不到');
+            error::throwError(error::CLASS_FILE_NO_EXISTS, $file . ':' . $c);
         }
     }
 }

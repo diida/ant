@@ -15,19 +15,26 @@ class html
     {
         $realPath = AUTOLOAD_ROOT . APP_NAMESPACE_ROOT . '/wwwroot/static/js/' . $path;
         $m = filemtime($realPath);
-        echo '<script type="text/javascript" src="' . $path . '?' . $m . '"></script>' . "\r\n";
+        echo '<script type="text/javascript" src="static/js/' . $path . '?' . $m . '"></script>' . "\r\n";
     }
 
-    static function css($path)
+    static function css($path, $package = false)
     {
-        $realPath = AUTOLOAD_ROOT . APP_NAMESPACE_ROOT . '/wwwroot/static/css/' . $path;
+        $prefix = 'static/css/';
+        if ($package) {
+            $prefix = '';
+        }
+
+        $realPath = AUTOLOAD_ROOT . APP_NAMESPACE_ROOT . '/wwwroot/' . $prefix . $path;
         $m = filemtime($realPath);
-        echo '<link rel="stylesheet" type="text/css" href="' . $path . '?' . $m . '">' . "\r\n";
+
+
+        echo '<link rel="stylesheet" type="text/css" href="' . $prefix . $path . '?' . $m . '">' . "\r\n";
     }
 
     static function jsVar($name, $val)
     {
-        echo "var $name=" . json_encode($val) . "\n";
+        echo "var $name=" . json_encode($val) . ";\n";
     }
 
     public static function loadTpl($path, $data = [])
