@@ -25,8 +25,8 @@ ant框架基于restful架构，使用GET POST PUT DELETE 实现 查、增、改�
 
 ## url参数规范
 ant框架不提倡自定义参数格式。例如index.php?a=1&b=2，通过自定义为index-a-1-b-2。当需要一个短的、体验良好的url格式时
-请在代码或者nginx或者apache中设置
-比如下面这个<br>
+请在代码或者nginx或者apache中设置<br>
+但是为了方便起见，比如下面这个<br>
 /user/1234567 指向一个用户的个人主页，由于number不能作为类名或者方法名，所以当框架遇到最后一个是数字时，会将数字默认丢到
 reauest::get('id') 中，由于这样一个需求很常见，直接由框架实现。更复杂需求如下:<br>
 ```url
