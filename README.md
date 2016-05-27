@@ -27,9 +27,11 @@ Ant框架基于restful架构，使用GET POST PUT DELETE 实现 查、增、改�
 2. GET /game/user/friend => /index.php?path=game/user/friend
 3. GET /game/user/friend?x=1 => /index.php?path=game/user/friend&x=1
 
-rewrite ^/(.*?)?(.*)$ /index.php?path=$1&$2
-rewrite ^/(.*?)$ /index.php?path=$1
-
+在nginx中，你需要加上这样的代码
+```
+rewrite ^/(.*)?(.*)$ /index.php?path=$1&$2
+rewrite ^/(.*)$ /index.php?path=$1
+```
 ## url参数规范
 Ant框架不提倡自定义参数格式。例如index.php?a=1&b=2，通过自定义为index-a-1-b-2。尽量使用正常的url参数书写方式。
 
