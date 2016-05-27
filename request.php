@@ -104,6 +104,9 @@ class request
             if (isset($arr[$key])) {
                 self::$instance->val = $arr[$key];
             } else {
+                if ($key == '*') {
+                    return $arr;
+                }
                 self::$instance->val = null;
             }
 
@@ -114,7 +117,7 @@ class request
     private function save()
     {
         $type = $this->type;
-        $arr = & $this->$type;
+        $arr = &$this->$type;
         $arr[$this->key] = $this->val;
     }
 

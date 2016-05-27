@@ -12,7 +12,7 @@ namespace base\rs;
 use \ant\action;
 use ant\request;
 
-class grid extends action
+class index extends action
 {
     function get()
     {

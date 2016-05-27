@@ -57,30 +57,8 @@ class entry
         spl_autoload_register(['\\ant\\entry', 'autoLoad']);
         //初始化request
         request::getInstance();
-        if (empty($paths)) {
-            $path = request::get('path')->trim()->val();
-            if (empty($path)) {
-                $path = request::server('QUERY_STRING')->val();
-            }
-
-            $paths = explode('/', $path);
-            $paths = array_filter($paths, function ($v) {
-                return preg_match('/^\w+$/', $v) && !empty($v);
-            });
-        }
-        $len = count($paths);
-        if ($len == 0) {
-            $paths[] = 'index';
-            $len = 1;
-        }
-
-        $last = $paths[$len - 1];
-
-        if (strpos($last, '_') === 0) {
-            unset($paths[$len - 1]);
-        } else {
-            $last = false;
-        }
+        //初始化访问路径信息和请求参数
+        list($paths, $last) = self::getPaths();
 
         $c = APP_NAMESPACE_ROOT . '\\rs\\' . implode('\\', $paths);
 
@@ -95,7 +73,9 @@ class entry
         } catch (error $e) {
             if ($e->getCode() <= error::CLASS_FILE_NO_EXISTS + error::$baseCode) {
                 $file = AUTOLOAD_ROOT . APP_NAMESPACE_ROOT . '/html/' . implode('\\', $paths) . '.php';
-                include($file);
+                if (is_file($file)) {
+                    include($file);
+                }
             } else {
                 $e->output();
             }
@@ -123,5 +103,53 @@ class entry
         } else {
             error::throwError(error::CLASS_FILE_NO_EXISTS, $file . ':' . $c);
         }
+    }
+
+    private static function getPaths()
+    {
+        if (empty($paths)) {
+            $path = request::get('path')->trim()->val();
+            if (empty($path)) {
+                $path = request::server('QUERY_STRING')->val();
+            }
+
+            $paths = explode('/', $path);
+            $paths = array_filter($paths);
+        }
+        $len = count($paths);
+        if ($len == 0) {
+            $paths[] = 'index';
+            $len = 1;
+        }
+
+        $tmp = [];
+        $params = false;
+        $key = false;
+        $last = false;
+        foreach ($paths as $k => $path) {
+            if ($path[0] == '_') {
+                if (strlen($path) > 1) {
+                    $last = $path;
+                }
+                $params = true;
+            } else if (!$params) {
+                $tmp[] = $path;
+            } else {
+                if ($key) {
+                    request::get($key)->setDefault($path, 'empty');
+                    $key = false;
+                } else if (is_numeric($path)) {
+                    request::get('id')->setDefault($path, 'empty');
+                } else {
+                    $key = $path;
+                }
+            }
+        }
+
+        $tmp = array_filter($tmp, function ($v) {
+            return preg_match('/^[\w]+$/', $v) && !empty($v);
+        });
+
+        return [$tmp, $last];
     }
 }
