@@ -1,4 +1,5 @@
-# ANT 框架最希望达到就是小，够用
+# ANT 框架
+设计目标：小，够用，规范
 
 ## 弱耦合
 弱耦合是这个框架的核心设计原则，除了entry，其他部分都尽量减少依赖关系。虽然我们也不可能单独使用某个文件，但是耦合越低，错误就越容易解决。
@@ -7,7 +8,7 @@
 ant框架基于restful架构，使用GET POST PUT DELETE 实现 查、增、改、删
 
 ## 入口
-接受2种url参数来访问固定的地址，带有下划线的链接，控制器和父级共享，这提供一种良好的封装逻辑的结构
+接受2种url参数来访问固定的地址，其中带有下划线的链接，控制器和父级共享，这提供一种良好的封装逻辑结构的方法
 
 1. GET index.php?path=game/user
 2. GET index.php?path=game/user/_password
@@ -18,7 +19,7 @@ ant框架基于restful架构，使用GET POST PUT DELETE 实现 查、增、改�
 1. GET /game/user/friend/_group?group_id=1
 
 ### 重写的原理
-如果你的默认入口设置了index.php，基于原理1，你可以不做任何重写设置
+如果你的默认入口设置了index.php，基于下面原理1，你可以不做任何重写设置
 
 1. GET /game/user/friend => /index.php?game/user/friend
 2. GET /game/user/friend => /index.php?path=game/user/friend
@@ -26,15 +27,22 @@ ant框架基于restful架构，使用GET POST PUT DELETE 实现 查、增、改�
 
 ## url参数规范
 ant框架不提倡自定义参数格式。例如index.php?a=1&b=2，通过自定义为index-a-1-b-2。当需要一个短的、体验良好的url格式时
-请在代码或者nginx或者apache中设置<br>
-但是为了方便起见，比如下面这个<br>
-/user/1234567 指向一个用户的个人主页，由于number不能作为类名或者方法名，所以当框架遇到最后一个是数字时，会将数字默认丢到
-reauest::get('id') 中，由于这样一个需求很常见，直接由框架实现。更复杂需求如下:<br>
+请在代码或者nginx或者apache中设置
+
+### 数字ID
+但是为了方便起见，比如下面这个
+
+* /user/1234567
+
+我们假设它指向一个用户的个人主页，由于number不能作为类名或者方法名，所以当框架遇到最后一个是数字时，会将数字默认丢到
+reauest::get('id') 中，由于这样一个需求很常见，直接由框架实现。更复杂需求如下:
 
 * /album/fid/1231/photo_id
 
-就需要代码实现，不能直接由框架处理了，但是此时框架会吧photo_id放到reauest::get('id') 中,然后在处理1231的时候报错。<br>
-如果有一个下划线作为隔离，那框架还是可以识别的，下面是利用下划线隔离路径和参数的例子
+这就需要代码实现，不能直接由框架处理了，应为框架无法知道fid的具体含义
+
+### 下划线隔离
+如果有一个下划线作为隔离，那框架可以识别访问路径的终止位置
 
 * /album/photo/_/1231 =>  /album/photo?id=1231 => /album/photo/1231
 * /album/photo/_/1231/fid/3 =>  /album/photo?id=1231&fid=3
