@@ -8,6 +8,7 @@
  */
 
 namespace base\rs;
+
 use \ant\action;
 
 class grid extends action
@@ -15,5 +16,10 @@ class grid extends action
     function get()
     {
 
+    }
+
+    function getColumn()
+    {
+        echo 'here is colume<br>';
     }
 }

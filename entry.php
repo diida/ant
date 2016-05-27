@@ -55,12 +55,33 @@ class entry
 
         //默认自动加载
         spl_autoload_register(['\\ant\\entry', 'autoLoad']);
+        //初始化request
+        request::getInstance();
 
-        $path = $_GET['path'];
+        $path = request::get('path')->trim()->val();
+        if (empty($path)) {
+            $path = request::server('QUERY_STRING')->val();
+        }
+
         $paths = explode('/', $path);
         $paths = array_filter($paths, function ($v) {
-            return preg_match('/\w+/', $v);
+            return preg_match('/^\w+$/', $v) && !empty($v);
         });
+
+        $len = count($paths);
+        if ($len == 0) {
+            $paths[] = 'index';
+            $len = 1;
+        }
+
+        $last = $paths[$len - 1];
+
+        if (strpos($last, '_') === 0) {
+            unset($paths[$len - 1]);
+        } else {
+            $last = false;
+        }
+
         $c = APP_NAMESPACE_ROOT . '\\rs\\' . implode('\\', $paths);
 
         try {
@@ -69,7 +90,7 @@ class entry
              * @var $act \ant\action
              */
             $act = new $c;
-            $act->exec(implode('/', $paths));
+            $act->exec(implode('/', $paths), $last);
             $act->display();
         } catch (error $e) {
             $e->output();
@@ -89,13 +110,13 @@ class entry
             $file = AUTOLOAD_ROOT . $path . '.php';
         }
 
-        if (file_exists($file)) {
+        if (is_file($file)) {
             require_once($file);
             if (!class_exists($c)) {
                 error::setError('类：' . $c . '找不到');
             }
         } else {
-            error::setError('类文件：' . $c . '找不到');
+            error::setError('类文件：' . $file . '找不到');
         }
     }
 }

@@ -19,20 +19,29 @@ class action
         $this->path = $path;
     }
 
-    public function exec($path)
+    /**
+     * 你可以访问的函数包括
+     * get post put delete ajaxGet ajaxPost ajaxDelete ajaxPut
+     * 以上面这些词开头的函数
+     * @param $path
+     * @param $last
+     * @return bool
+     */
+    public function exec($path, $last)
     {
         $this->init($path);
         $ajax = request::isAjax();
-        switch (request::server('REQUEST_METHOD')->val()) {
-            case 'GET':
-                return $ajax ? $this->ajaxGet() : $this->get();
-            case 'POST':
-                return $ajax ? $this->ajaxPost() : $this->post();
-            case 'PUT':
-                return $ajax ? $this->ajaxPut() : $this->put();
-            case 'DELETE':
-                return $ajax ? $this->ajaxDelete() : $this->delete();
+        $methodName = $ajax ? 'ajax' : '';
+        $requestMethod = request::server('REQUEST_METHOD')->val();
+        $methodName .= $ajax ? ucfirst($requestMethod) : strtolower($requestMethod);
+
+        if ($last) {
+            $last = substr($last, 1);
+            $this->path .= '/' . $last;
+            $methodName .= ucfirst($last);
         }
+
+        $this->$methodName();
         return false;
     }
 
