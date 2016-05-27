@@ -25,9 +25,10 @@ class action
      * 以上面这些词开头的函数
      * @param $path
      * @param $last
+     * @param $extra
      * @return bool
      */
-    public function exec($path, $last)
+    public function exec($path, $last = false, $extra = [])
     {
         $this->init($path);
         $ajax = request::isAjax();

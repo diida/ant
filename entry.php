@@ -58,7 +58,7 @@ class entry
         //初始化request
         request::getInstance();
         //初始化访问路径信息和请求参数
-        list($paths, $last) = self::getPaths();
+        list($paths, $last, $extra) = self::getPaths();
 
         $c = APP_NAMESPACE_ROOT . '\\rs\\' . implode('\\', $paths);
 
@@ -68,7 +68,7 @@ class entry
              * @var $act \ant\action
              */
             $act = new $c;
-            $act->exec(implode('/', $paths), $last);
+            $act->exec(implode('/', $paths), $last, $extra);
             $act->display();
         } catch (error $e) {
             if ($e->getCode() <= error::CLASS_FILE_NO_EXISTS + error::$baseCode) {
@@ -121,6 +121,7 @@ class entry
         $params = false;
         $key = false;
         $last = false;
+        $extra = [];
         foreach ($paths as $k => $path) {
             if ($path[0] == '_') {
                 if (strlen($path) > 1) {
@@ -135,12 +136,14 @@ class entry
             } else {
                 if ($key) {
                     request::get($key)->setDefault($path, 'empty');
+                    $extra[] = $path;
                     $key = false;
                 } else if (is_numeric($path)) {
                     request::get('id')->setDefault($path, 'empty');
                     $params = true;
                 } else {
                     $key = $path;
+                    $extra[] = $key;
                 }
             }
         }
@@ -153,6 +156,6 @@ class entry
             $tmp[] = 'index';
         }
 
-        return [$tmp, $last];
+        return [$tmp, $last, $extra];
     }
 }
