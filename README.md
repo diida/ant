@@ -35,17 +35,19 @@ ant框架不提倡自定义参数格式。例如index.php?a=1&b=2，通过自定
 * /user/1234567
 
 我们假设它指向一个用户的个人主页，由于number不能作为类名或者方法名，所以当框架遇到最后一个是数字时，会将数字默认丢到
-reauest::get('id') 中，由于这样一个需求很常见，直接由框架实现。更复杂需求如下:
+reauest::get('id') 中，由于这样一个需求很常见，直接由框架实现。
+
+### 更复杂需求:
 
 * /album/fid/1231/photo_id
 
-这就需要代码实现，不能直接由框架处理了，应为框架无法知道fid的具体含义
+这就需要代码实现，不能直接由框架处理了，因为框架无法知道fid的具体含义
 
 ### 下划线隔离
-如果有一个下划线作为隔离，那框架可以识别访问路径的终止位置
+如果有一个下划线作为隔离，那框架可以识别访问路径的终止位置，第二个例子中，数字也成为了隔离参数
 
 * /album/photo/_/1231 =>  /album/photo?id=1231 => /album/photo/1231
-* /album/photo/_/1231/fid/3 =>  /album/photo?id=1231&fid=3
+* /album/photo/_/1231/fid/3 =>  /album/photo?id=1231&fid=3 => /album/photo/1231/fid/3
 * /album/photo/_pic/123 => /album/photo/_pic?id=123
 * /album/photo/_pic/1234/fid/2 => /album/photo/_pic?id=1234&fid=2
 * /album/photo/_pic/pid/1234/fid/2 => /album/photo/_pic?pid=1234&fid=2

@@ -16,7 +16,9 @@ class grid extends action
 {
     function get()
     {
-
+        echo '<pre>';
+        print_r(request::get('*'));
+        echo 'here is get<br>';
     }
 
     function getColumn()

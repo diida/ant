@@ -127,6 +127,9 @@ class entry
                     $last = $path;
                 }
                 $params = true;
+            } else if (is_numeric($path)) {
+                request::get('id')->setDefault($path, 'empty');
+                $params = true;
             } else if (!$params) {
                 $tmp[] = $path;
             } else {
@@ -135,6 +138,7 @@ class entry
                     $key = false;
                 } else if (is_numeric($path)) {
                     request::get('id')->setDefault($path, 'empty');
+                    $params = true;
                 } else {
                     $key = $path;
                 }
