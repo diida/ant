@@ -41,6 +41,7 @@ class entry
             echo "请设置 APP_NAMESPACE_ROOT 作为项目名/项目根目录名";
             return false;
         }
+        define('APP_NAMESPACE_ROOT_PATH', str_replace('\\', '/', APP_NAMESPACE_ROOT));
         return true;
     }
 
