@@ -134,6 +134,20 @@ class request
         return $this;
     }
 
+    function enum($enum = [], $focus = true)
+    {
+        if (!in_array($this->val, $enum)) {
+            if ($focus) {
+                $this->val = $enum[0];
+            } else {
+                $this->val = null;
+            }
+        }
+
+        $this->save();
+        return $this;
+    }
+
     function clear()
     {
         $this->val = null;

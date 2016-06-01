@@ -13,6 +13,7 @@ class action
 {
 
     public $path;
+    public $view = true;
 
     public function init($path)
     {
@@ -95,7 +96,9 @@ class action
 
     public function display()
     {
-        self::loadTpl($this->tplData, $this->path);
+        if ($this->view) {
+            self::loadTpl($this->tplData, $this->path);
+        }
     }
 
     public static function loadTpl(&$data, $path)
@@ -110,5 +113,10 @@ class action
         if (is_file($file)) {
             include($file);
         }
+    }
+
+    public static function location($uri, $code = 302)
+    {
+        header("Location:$uri");
     }
 }

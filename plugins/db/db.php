@@ -150,14 +150,14 @@ class db
         return $this->insertEx($a, $t, 'replace');
     }
 
-    function insertEx($a, $t, $type = 'insert')
+    function insertEx($t, $a, $type = 'insert')
     {
-        return $this->insertEx($a, $t, $type);
+        return $this->insertEx($t, $a, $type);
     }
 
-    function updateEx($a, $t, $where, $params = array())
+    function updateEx($t, $a, $where, $params = array())
     {
-        return $this->updateEx($a, $t, $where, $params);
+        return $this->updateEx($t, $a, $where, $params);
     }
 
     final function delete()
