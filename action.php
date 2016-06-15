@@ -37,6 +37,10 @@ class action
         $requestMethod = request::server('REQUEST_METHOD')->val();
         $methodName .= $ajax ? ucfirst($requestMethod) : strtolower($requestMethod);
 
+        if ($ajax) {
+            $this->view = false;
+        }
+        
         if ($last) {
             $last = substr($last, 1);
             $this->path .= '/' . $last;

@@ -69,6 +69,67 @@ class request
         }
     }
 
+    /**
+     * 多组JSON数据的情况下，数据会暂存在这里
+     * @var bool
+     */
+    public $jsonDataList = false;
+    public $jsonDataOffset = 0;
+    public $jsonDataSize = 0;
+
+    /**
+     * 一些前端框架将JSON放在请求体中
+     */
+    static function initJson($desType = '')
+    {
+        $me = self::$instance;
+        if ($me->jsonDataList) {
+            if ($me->jsonDataOffset < $me->jsonDataSize) {
+                $data = $me->jsonDataList[$me->jsonDataOffset++];
+            } else {
+                $data = false;
+            }
+        } else {
+            $type = self::server('REQUEST_METHOD')->enum(['GET', 'PUT', 'POST', 'DELETE'])->val();
+            $type = strtolower($type);
+
+            if (empty($me->put['put'])) {
+                $json = "";
+                $fp = fopen('php://input', 'r');
+                while ($kb = fread($fp, 1024)) {
+                    $json .= $kb;
+                }
+                fclose($fp);
+            } else {
+                $json = $me->put['put'];
+                unset($me->put['put']);
+            }
+
+            $data = json_decode($json, 1);
+            if (isset($data[0])) {
+                $me->jsonDataList = $data;
+                $me->jsonDataOffset = 1;
+                $me->jsonDataSize = count($data);
+                $data = $data[0];
+            } else {
+                $me->jsonDataList = [$data];
+                $me->jsonDataOffset = 1;
+                $me->jsonDataSize = 1;
+            }
+        }
+
+        if (json_last_error()) {
+            $me->$type = [];
+        } else {
+            if ($desType != '') {
+                $me->$desType = $data;
+            } else {
+                $me->$type = $data;
+            }
+        }
+        return $data;
+    }
+
     static function get($key)
     {
         return self::$instance->request('get', $key);
@@ -201,8 +262,8 @@ class request
         return false;
     }
 
-    static function put()
+    static function put($key = 'put')
     {
-        return self::$instance->request('put', 'put');
+        return self::$instance->request('put', $key);
     }
 }

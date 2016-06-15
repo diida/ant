@@ -107,6 +107,9 @@ class entry
                 $path = request::server('QUERY_STRING')->val();
             }
 
+            if (defined('APP_URL_PREFIX')) {
+                $path = str_replace(APP_URL_PREFIX, '', $path);
+            }
             $paths = explode('/', $path);
             $paths = array_filter($paths);
         }
