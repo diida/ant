@@ -104,7 +104,7 @@ class entry
         if (empty($paths)) {
             $path = request::get('path')->trim()->val();
             if (empty($path)) {
-                $path = request::server('QUERY_STRING')->val();
+                $path = request::server('DOCUMENT_URI')->val();
             }
 
             if (defined('APP_URL_PREFIX')) {
